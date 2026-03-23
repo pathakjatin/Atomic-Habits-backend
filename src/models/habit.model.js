@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
-import {HABIT_CATEGORIES} from "../constants/habitCategories"; 
+import {HABIT_CATEGORIES} from "../constants/habitCategories.js"; 
 const { Schema } = mongoose;
 
 const habitSchema = new Schema({
-    userId:{
+    user:{
         type: Schema.Types.ObjectId,
         ref:"User",
         required: true,
@@ -59,6 +59,6 @@ const habitSchema = new Schema({
 },{timestamps: true}
 );
 
-habitSchema.index({userId: 1, status: 1});
+habitSchema.index({user: 1, status: 1});
 
 export default mongoose.model("Habit", habitSchema);

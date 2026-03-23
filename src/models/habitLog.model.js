@@ -2,13 +2,13 @@ import mongoose from "mongoose";
 const { Schema } = mongoose;
 
 const habitLogSchema = new Schema({
-    userId:{
+    user:{
         type: Schema.Types.ObjectId,
         ref:"User",
         required: true,
         index: true
     },
-    habitId:{
+    habit:{
         type: Schema.Types.ObjectId,
         ref:"Habit",
         required: true,
@@ -32,7 +32,7 @@ const habitLogSchema = new Schema({
     }
 }, {timestamps: true});
 
-habitLogSchema.index({habitId: 1, date: 1}, {unique: true});
-habitLogSchema.index({userId: 1, date: 1});
+habitLogSchema.index({habit: 1, date: 1}, {unique: true});
+habitLogSchema.index({user: 1, date: 1});
 
 export default mongoose.model("HabitLog", habitLogSchema);
