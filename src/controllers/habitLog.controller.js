@@ -8,7 +8,7 @@ import {
 import {
   createLogValidator,
   updateLogValidator,
-} from "../validators/habit.validator.js";
+} from "../validators/habitLog.validator.js";
 
 export async function create(req, res) {
   try {
