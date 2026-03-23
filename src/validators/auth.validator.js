@@ -10,7 +10,12 @@ export const registerValidator = Joi.object({
                 .pattern(/[0-9]/)
                 .required(),
     picture:Joi.string().uri().optional(),
-    phone:Joi.string().optional(),
+    phone: Joi.string().pattern(/^\+?[1-9]\d{7,14}$/).optional(),
     dob:Joi.date().optional(),
     gender:Joi.string().valid("Male","Female","Other","Preferred not to say").optional()
+});
+
+export const loginValidator = Joi.object({
+    username: Joi.string().required(),
+    password: Joi.string().required(),
 });
