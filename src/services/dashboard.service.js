@@ -144,15 +144,20 @@ export async function getHabitSummaries(userId) {
     // Build 7-day progress — one entry per day
     const sevenDayProgress = [];
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(today);
-      d.setUTCDate(today.getUTCDate() - i);
-      const dStr = toDateString(d);
-      const log = recent.find((l) => toDateString(l.date) === dStr);
+    const d = new Date(today);
+    d.setUTCDate(today.getUTCDate() - i);
+    const dStr = toDateString(d);
 
-      sevenDayProgress.push({
+    // Skip days before habit started
+    if (new Date(dStr) < new Date(toDateString(new Date(habit.startDate)))) {
+        continue;
+    }
+
+    const log = recent.find((l) => toDateString(l.date) === dStr);
+    sevenDayProgress.push({
         date: dStr,
         status: log ? log.status : "not_logged",
-      });
+    });
     }
 
     // Success % since startDate
