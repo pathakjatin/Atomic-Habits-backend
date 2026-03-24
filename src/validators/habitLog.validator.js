@@ -1,4 +1,5 @@
 // add to habit.validator.js
+import Joi from "joi";
 
 export const createLogValidator = Joi.object({
   date: Joi.date().required(),

@@ -1,4 +1,4 @@
-import { toDateString, getYesterday } from "./date.util.js";
+import { toDateString, getYesterday } from "./date.utils.js";
 
 export function calculateStreak({ lastCompletedDate, currentStreak, today }) {
   const todayStr = toDateString(today);

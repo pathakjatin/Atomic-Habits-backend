@@ -1,8 +1,8 @@
 import HabitLog from "../models/habitLog.model.js";
 import Habit from "../models/habit.model.js";
 import AppError from "../utils/AppError.js";
-import { toDateString } from "../utils/date.util.js";
-import { calculateStreak } from "../utils/streak.util.js";
+import { toDateString } from "../utils/date.utils.js";
+import { calculateStreak } from "../utils/streak.utils.js";
 
 async function updateStreak(habit, logDate, status) {
   if (status === "failed") {
