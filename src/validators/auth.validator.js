@@ -19,3 +19,24 @@ export const loginValidator = Joi.object({
     username: Joi.string().required(),
     password: Joi.string().required(),
 });
+
+export const updateProfileValidator = Joi.object({
+  name: Joi.string().min(2).max(50),
+  phone: Joi.string().pattern(/^\+?[1-9]\d{7,14}$/).optional(),
+  picture: Joi.string().uri().optional(),
+  dob: Joi.date().optional(),
+  gender: Joi.string().valid("Male", "Female", "Other", "Preferred not to say").optional(),
+}).min(1);
+
+export const changePasswordValidator = Joi.object({
+  currentPassword: Joi.string().required(),
+  newPassword: Joi.string()
+    .min(8)
+    .pattern(/[A-Z]/)
+    .pattern(/[0-9]/)
+    .required(),
+});
+
+export const deleteAccountValidator = Joi.object({
+  password: Joi.string().required(),
+});
