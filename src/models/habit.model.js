@@ -56,6 +56,11 @@ const habitSchema = new Schema({
     lastCompletedDate: { type: Date },
   },
   badges: [{ type: String }],
+  dueDay: {
+    type: Number,
+    min: 0,
+    max: 31,
+  },
 }, { timestamps: true });
 
 habitSchema.index({ user: 1, status: 1 });

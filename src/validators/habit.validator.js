@@ -18,6 +18,15 @@ export const createHabitValidator = Joi.object({
   }),
   startDate: Joi.date().required(),
   endDate: Joi.date().greater(Joi.ref("startDate")).optional(),
+  dueDay: Joi.when("frequency", {
+  is: "daily",
+  then: Joi.forbidden(),
+  otherwise: Joi.when("frequency", {
+    is: "weekly",
+    then: Joi.number().integer().min(0).max(6).required(),
+    otherwise: Joi.number().integer().min(1).max(31).required(), // monthly
+  }),
+}),
 });
 
 export const updateHabitValidator = Joi.object({
@@ -31,5 +40,6 @@ export const updateHabitValidator = Joi.object({
     value: Joi.number().positive(),
   }),
   endDate: Joi.date().optional(),
+  dueDay: Joi.number().integer().min(0).max(31).optional(),
 }).min(1); // at least one field required on update
 
