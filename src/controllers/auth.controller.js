@@ -1,5 +1,5 @@
-import { registerUser, loginUser } from "../services/auth.service.js";
-import { registerValidator, loginValidator } from "../validators/auth.validator.js";
+import { registerUser, loginUser, updateProfile, deleteAccount, changePassword } from "../services/auth.service.js";
+import { registerValidator, loginValidator, updateProfileValidator, changePasswordValidator, deleteAccountValidator } from "../validators/auth.validator.js";
 import generateToken from "../utils/generateToken.utils.js";
 
 export async function register(req, res) {
@@ -56,4 +56,59 @@ export function getMe(req, res) {
         message: "Authenticated user fetched successfully",
         data: req.user,
     });
+}
+
+export async function updateProfileHandler(req, res) {
+  try {
+    const { error } = updateProfileValidator.validate(req.body, { abortEarly: true });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const user = await updateProfile(req.user._id, req.body);
+    return res.status(200).json({ message: "Profile updated successfully", data: user });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ code: error.code, message: error.message });
+    }
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function changePasswordHandler(req, res) {
+  try {
+    const { error } = changePasswordValidator.validate(req.body, { abortEarly: true });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    const { currentPassword, newPassword } = req.body;
+    await changePassword(req.user._id, currentPassword, newPassword);
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ code: error.code, message: error.message });
+    }
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function deleteAccountHandler(req, res) {
+  try {
+    const { error } = deleteAccountValidator.validate(req.body, { abortEarly: true });
+    if (error) {
+      return res.status(400).json({ message: error.details[0].message });
+    }
+
+    await deleteAccount(req.user._id, req.body.password);
+    return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    if (error.statusCode) {
+      return res.status(error.statusCode).json({ code: error.code, message: error.message });
+    }
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
 }
