@@ -18,11 +18,7 @@ export async function register(req, res) {
         user,
         });
     } catch (error) {
-        if (error.statusCode) {
-        return res.status(error.statusCode).json({ code: error.code, message: error.message });
-        }
-        console.error(error);
-        return res.status(500).json({ message: "Internal server error" });
+        next(error);
     }
 }
 
@@ -43,11 +39,7 @@ export async function login(req, res) {
         data: { user, token },
         });
     } catch (error) {
-        if (error.statusCode) {
-        return res.status(error.statusCode).json({ code: error.code, message: error.message });
-        }
-        console.error(error);
-        return res.status(500).json({ message: "Internal server error" });
+        next(error);
     }
 }
 
@@ -68,11 +60,7 @@ export async function updateProfileHandler(req, res) {
     const user = await updateProfile(req.user._id, req.body);
     return res.status(200).json({ message: "Profile updated successfully", data: user });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -87,11 +75,7 @@ export async function changePasswordHandler(req, res) {
     await changePassword(req.user._id, currentPassword, newPassword);
     return res.status(200).json({ message: "Password changed successfully" });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -105,10 +89,6 @@ export async function deleteAccountHandler(req, res) {
     await deleteAccount(req.user._id, req.body.password);
     return res.status(200).json({ message: "Account deleted successfully" });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }

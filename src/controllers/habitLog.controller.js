@@ -20,11 +20,7 @@ export async function create(req, res) {
     const log = await logHabit(req.user._id, req.params.habitId, req.body);
     return res.status(201).json({ message: "Habit logged successfully", data: log });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -38,11 +34,7 @@ export async function update(req, res) {
     const log = await updateLog(req.user._id, req.params.logId, req.body);
     return res.status(200).json({ message: "Log updated successfully", data: log });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -56,11 +48,7 @@ export async function getForHabit(req, res) {
     });
     return res.status(200).json({ message: "Logs fetched successfully", data: logs });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -69,10 +57,6 @@ export async function getOne(req, res) {
     const log = await getLogById(req.user._id, req.params.logId);
     return res.status(200).json({ message: "Log fetched successfully", data: log });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }

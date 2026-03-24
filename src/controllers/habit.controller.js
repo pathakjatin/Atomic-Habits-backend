@@ -21,11 +21,7 @@ export async function create(req, res) {
     const habit = await createHabit(req.user._id, req.body);
     return res.status(201).json({ message: "Habit created successfully", data: habit });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -35,11 +31,7 @@ export async function getAll(req, res) {
     const habits = await getUserHabits(req.user._id, { status, category, frequency });
     return res.status(200).json({ message: "Habits fetched successfully", data: habits });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -48,11 +40,7 @@ export async function getOne(req, res) {
     const habit = await getHabitById(req.user._id, req.params.id);
     return res.status(200).json({ message: "Habit fetched successfully", data: habit });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -66,11 +54,7 @@ export async function update(req, res) {
     const habit = await updateHabit(req.user._id, req.params.id, req.body);
     return res.status(200).json({ message: "Habit updated successfully", data: habit });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
 
@@ -79,10 +63,6 @@ export async function remove(req, res) {
     const result = await deleteHabit(req.user._id, req.params.id);
     return res.status(200).json({ message: "Habit deleted successfully", data: result });
   } catch (error) {
-    if (error.statusCode) {
-      return res.status(error.statusCode).json({ code: error.code, message: error.message });
-    }
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
+    next(error);
   }
 }
