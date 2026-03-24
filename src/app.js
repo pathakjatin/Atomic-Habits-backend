@@ -3,10 +3,13 @@ import authRoutes from "./routes/auth.route.js";
 import habitRoutes from "./routes/habit.route.js";
 import habitLogRouter from "./routes/habitLog.route.js";
 import dashboardRouter from "./routes/dashboard.route.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 app.use(express.json());
 
+
+app.use(errorHandler);
 app.use('/auth', authRoutes);
 app.use('/api/habits', habitRoutes);
 app.use("/api/dashboard", dashboardRouter);
