@@ -1,4 +1,6 @@
 import express from "express";
+import cors from "cors";
+import helmet from "helmet";
 import authRoutes from "./routes/auth.route.js";
 import habitRoutes from "./routes/habit.route.js";
 import habitLogRouter from "./routes/habitLog.route.js";
@@ -8,7 +10,11 @@ import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
 app.use(express.json());
-
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
 app.get('/health', (req, res)=>{
     res.status(200).json({status: "ok"})
 })
