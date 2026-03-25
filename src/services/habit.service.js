@@ -1,8 +1,10 @@
 import Habit from "../models/habit.model.js";
 import AppError from "../utils/AppError.js";
+import { checkFirstHabitBadge } from "./badge.service.js";
 
 export async function createHabit(userId, data) {
   const habit = await Habit.create({ user: userId, ...data });
+  await checkFirstHabitBadge(userId);
   return habit;
 }
 

@@ -3,6 +3,7 @@ import Habit from "../models/habit.model.js";
 import AppError from "../utils/AppError.js";
 import { toDateString } from "../utils/date.utils.js";
 import { calculateStreak } from "../utils/streak.utils.js";
+import { evaluateBadges } from "./badge.service.js";
 
 async function updateStreak(habit, logDate, status) {
   if (status === "failed") {
@@ -61,6 +62,8 @@ export async function logHabit(userId, habitId, data) {
   }
 
   await updateStreak(habit, logDate, data.status);
+  await updateStreak(habit, logDate, data.status);
+  await evaluateBadges(userId, { currentStreak: habit.streak.current });
   return log;
 }
 
