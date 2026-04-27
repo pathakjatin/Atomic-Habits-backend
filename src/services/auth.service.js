@@ -14,7 +14,7 @@ export async function registerUser(payload) {
     const user = await User.create({ name, email, picture, phone, username, password, dob, gender });
 
     return {
-        id: user._id,
+        _id: user._id,
         name: user.name,
         email: user.email,
         username: user.username,

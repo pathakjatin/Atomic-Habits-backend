@@ -11,7 +11,6 @@ import { calculateSuccessRatio } from "../utils/ratio.utils.js";
 async function awardIfNotEarned(userId, key) {
   try {
     await UserBadge.create({ user: userId, key });
-    console.log(`Badge awarded: ${key} → user ${userId}`);
   } catch (err) {
     // 11000 = duplicate key — badge already earned, silently ignore
     if (err.code !== 11000) throw err;

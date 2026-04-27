@@ -12,10 +12,11 @@ export async function register(req, res) {
         const { name, email, username, password, phone, dob, gender, picture } = req.body;
 
         const user = await registerUser({ name, email, username, password, phone, dob, gender, picture });
+        const token = generateToken(user._id);
 
         return res.status(201).json({
         message: "User registered successfully",
-        user,
+        data: { user, token },
         });
     } catch (error) {
         next(error);

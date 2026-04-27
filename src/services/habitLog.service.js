@@ -44,8 +44,27 @@ export async function logHabit(userId, habitId, data) {
 
   const logDate = toDateString(data.date);
 
+  // ── check if already logged today ──────────────────────────────────────
+  const existingLog = await HabitLog.findOne({
+    user: userId,
+    habit: habitId,
+    date: new Date(logDate),
+  });
+
   let log;
-  try {
+
+  if (existingLog) {
+    // additive — accumulate value, take the better status
+    const betterStatus = (a, b) => {
+      const rank = { success: 3, partial: 2, failed: 1 };
+      return rank[a] >= rank[b] ? a : b;
+    };
+
+    existingLog.value  = (existingLog.value ?? 0) + (data.value ?? 0);
+    existingLog.status = data.status;
+    if (data.note) existingLog.note = data.note; // overwrite note if provided
+    log = await existingLog.save();
+  } else {
     log = await HabitLog.create({
       user: userId,
       habit: habitId,
@@ -54,15 +73,9 @@ export async function logHabit(userId, habitId, data) {
       value: data.value ?? 0,
       note: data.note,
     });
-  } catch (err) {
-    if (err.code === 11000) {
-      throw new AppError("ALREADY_LOGGED", "Habit already logged for this date", 409);
-    }
-    throw err;
   }
 
-  await updateStreak(habit, logDate, data.status);
-  await updateStreak(habit, logDate, data.status);
+  await updateStreak(habit, logDate, log.status);
   await evaluateBadges(userId, { currentStreak: habit.streak.current });
   return log;
 }
