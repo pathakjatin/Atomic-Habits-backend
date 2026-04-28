@@ -16,6 +16,11 @@ export const createHabitValidator = Joi.object({
     }).required(),
     otherwise: Joi.forbidden(),
   }),
+    targetDirection: Joi.when("trackingType", {
+    is: "measurable",
+    then: Joi.string().valid("gte", "lte").default("gte").optional(),
+    otherwise: Joi.forbidden(),
+  }),
   startDate: Joi.date().required(),
   endDate: Joi.date().greater(Joi.ref("startDate")).optional(),
   dueDay: Joi.when("frequency", {

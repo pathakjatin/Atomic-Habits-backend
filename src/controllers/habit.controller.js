@@ -11,7 +11,7 @@ import {
   updateHabitValidator,
 } from "../validators/habit.validator.js";
 
-export async function create(req, res) {
+export async function create(req, res, next) {
   try {
     const { error } = createHabitValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -25,7 +25,7 @@ export async function create(req, res) {
   }
 }
 
-export async function getAll(req, res) {
+export async function getAll(req, res, next) {
   try {
     const { status, category, frequency } = req.query;
     const habits = await getUserHabits(req.user._id, { status, category, frequency });
@@ -35,7 +35,7 @@ export async function getAll(req, res) {
   }
 }
 
-export async function getOne(req, res) {
+export async function getOne(req, res, next) {
   try {
     const habit = await getHabitById(req.user._id, req.params.id);
     return res.status(200).json({ message: "Habit fetched successfully", data: habit });
@@ -44,7 +44,7 @@ export async function getOne(req, res) {
   }
 }
 
-export async function update(req, res) {
+export async function update(req, res, next) {
   try {
     const { error } = updateHabitValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -58,7 +58,7 @@ export async function update(req, res) {
   }
 }
 
-export async function remove(req, res) {
+export async function remove(req, res, next) {
   try {
     const result = await deleteHabit(req.user._id, req.params.id);
     return res.status(200).json({ message: "Habit deleted successfully", data: result });
