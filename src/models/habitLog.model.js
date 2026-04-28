@@ -15,11 +15,6 @@ const habitLogSchema = new Schema({
     required: true,
     index: true,
   },
-  targetDirection: {
-    type: String,
-    enum: ["gte", "lte"],
-    default: "gte",
-  },
   date: {
     type: Date,
     required: true,

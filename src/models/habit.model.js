@@ -50,6 +50,11 @@ const habitSchema = new Schema({
     required: true,
   },
   endDate: { type: Date },
+  targetDirection: {
+    type: String,
+    enum: ["gte", "lte"],
+    default: "gte",
+  },
   streak: {
     current: { type: Number, default: 0 },
     best: { type: Number, default: 0 },
