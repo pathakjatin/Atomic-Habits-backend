@@ -2,7 +2,7 @@ import { registerUser, loginUser, updateProfile, deleteAccount, changePassword }
 import { registerValidator, loginValidator, updateProfileValidator, changePasswordValidator, deleteAccountValidator } from "../validators/auth.validator.js";
 import generateToken from "../utils/generateToken.utils.js";
 
-export async function register(req, res) {
+export async function register(req, res, next) {
     try {
         const { error } = registerValidator.validate(req.body, { abortEarly: true });
         if (error) {
@@ -23,7 +23,7 @@ export async function register(req, res) {
     }
 }
 
-export async function login(req, res) {
+export async function login(req, res, next) {
     try {
         const { error } = loginValidator.validate(req.body, { abortEarly: true });
         if (error) {
@@ -51,7 +51,7 @@ export function getMe(req, res) {
     });
 }
 
-export async function updateProfileHandler(req, res) {
+export async function updateProfileHandler(req, res, next) {
   try {
     const { error } = updateProfileValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -65,7 +65,7 @@ export async function updateProfileHandler(req, res) {
   }
 }
 
-export async function changePasswordHandler(req, res) {
+export async function changePasswordHandler(req, res, next) {
   try {
     const { error } = changePasswordValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -80,7 +80,7 @@ export async function changePasswordHandler(req, res) {
   }
 }
 
-export async function deleteAccountHandler(req, res) {
+export async function deleteAccountHandler(req, res, next) {
   try {
     const { error } = deleteAccountValidator.validate(req.body, { abortEarly: true });
     if (error) {
