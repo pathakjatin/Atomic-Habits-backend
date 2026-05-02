@@ -5,7 +5,7 @@ import {
   getHabitSummaries,
 } from "../services/dashboard.service.js";
 
-export async function today(req, res) {
+export async function today(req, res, next) {
   try {
     const data = await getTodayHabits(req.user._id);
     return res.status(200).json({ message: "Today's habits fetched", data });
@@ -14,7 +14,7 @@ export async function today(req, res) {
   }
 }
 
-export async function calendarDay(req, res) {
+export async function calendarDay(req, res, next) {
   try {
     const { date } = req.query;
     if (!date) {
@@ -27,7 +27,7 @@ export async function calendarDay(req, res) {
   }
 }
 
-export async function summaries(req, res) {
+export async function summaries(req, res, next) {
   try {
     const data = await getHabitSummaries(req.user._id);
     return res.status(200).json({ message: "Habit summaries fetched", data });

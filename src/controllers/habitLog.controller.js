@@ -10,7 +10,7 @@ import {
   updateLogValidator,
 } from "../validators/habitLog.validator.js";
 
-export async function create(req, res) {
+export async function create(req, res, next) {
   try {
     const { error } = createLogValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -24,7 +24,7 @@ export async function create(req, res) {
   }
 }
 
-export async function update(req, res) {
+export async function update(req, res, next) {
   try {
     const { error } = updateLogValidator.validate(req.body, { abortEarly: true });
     if (error) {
@@ -38,7 +38,7 @@ export async function update(req, res) {
   }
 }
 
-export async function getForHabit(req, res) {
+export async function getForHabit(req, res, next) {
   try {
     const { from, to, status } = req.query;
     const logs = await getLogsForHabit(req.user._id, req.params.habitId, {
@@ -52,7 +52,7 @@ export async function getForHabit(req, res) {
   }
 }
 
-export async function getOne(req, res) {
+export async function getOne(req, res, next) {
   try {
     const log = await getLogById(req.user._id, req.params.logId);
     return res.status(200).json({ message: "Log fetched successfully", data: log });
