@@ -40,7 +40,8 @@ const userSchema = new Schema({
     gender:{
         type: String,
         enum:["Male", "Female", "Other", "Preferred not to say"]
-    }
+    },
+    lastLoginAt: { type: Date },
 }, {timestamps: true});
 
 userSchema.pre("save", async function() {

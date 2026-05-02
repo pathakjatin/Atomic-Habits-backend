@@ -33,6 +33,8 @@ export async function loginUser(payload) {
     if (!isMatch) {
         throw new AppError("INVALID_CREDENTIALS", "Invalid username or password", 401);
     }
+    existingUser.lastLoginAt = new Date();
+    await existingUser.save();
 
     return {
         _id: existingUser._id,
