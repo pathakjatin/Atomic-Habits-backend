@@ -12,7 +12,6 @@ function isDueToday(habit, date) {
   if (habit.frequency === "monthly") return d.getUTCDate() === habit.dueDay;
   return false;
 }
-
 function buildLogMap(logs) {
   const map = {};
   for (const log of logs) {
@@ -24,20 +23,20 @@ function buildLogMap(logs) {
 // ─── Today's Habits ─────────────────────────────────────
 
 export async function getTodayHabits(userId) {
-  const today = new Date();
-  const todayStr = toDateString(today);
+  const now = new Date();
+  const todayUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const todayStr = toDateString(now);
 
   const habits = await Habit.find({ user: userId, status: "active" });
-  const dueHabits = habits.filter((h) => isDueToday(h, today));
+  const dueHabits = habits.filter((h) => isDueToday(h, todayUTC));
 
   if (dueHabits.length === 0) return [];
 
   const logs = await HabitLog.find({
     user: userId,
     habit: { $in: dueHabits.map((h) => h._id) },
-    date: new Date(todayStr),
+    date: todayUTC,
   });
-
   const logMap = buildLogMap(logs);
 
   return dueHabits.map((habit) => {
@@ -62,10 +61,23 @@ export async function getTodayHabits(userId) {
 // ─── Calendar Day Habits ─────────────────────────────────
 
 export async function getCalendarDay(userId, dateStr) {
-  const date = new Date(dateStr);
-  const normalizedDate = new Date(toDateString(date));
-  const today = new Date(toDateString(new Date()));
-  const isFuture = normalizedDate > today;
+  const [year, month, day] = dateStr.split("-").map(Number);
+
+  // Logs are stored as UTC midnight — query must match exactly
+  const normalizedDate = new Date(Date.UTC(year, month - 1, day));
+
+  const todayUTC = new Date();
+  const todayNormalized = new Date(Date.UTC(
+    todayUTC.getUTCFullYear(),
+    todayUTC.getUTCMonth(),
+    todayUTC.getUTCDate()
+  ));
+
+  const isFuture = normalizedDate > todayNormalized;
+
+  // isDueToday needs a date where getDay()/getDate() reflect the correct calendar day
+  // Use UTC methods since date is UTC midnight
+  const date = normalizedDate;
 
   const habits = await Habit.find({ user: userId, status: "active" });
   const dueHabits = habits.filter((h) => isDueToday(h, date));
@@ -91,9 +103,7 @@ export async function getCalendarDay(userId, dateStr) {
         category: habit.category,
         frequency: habit.frequency,
       },
-      log: log
-        ? { _id: log._id, status: log.status, value: log.value }
-        : null,
+      log: log ? { _id: log._id, status: log.status, value: log.value } : null,
       isLogged: !!log,
       isLocked: isFuture,
     };

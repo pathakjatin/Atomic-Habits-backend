@@ -34,41 +34,36 @@ async function updateStreak(habit, logDate, status) {
 
 export async function logHabit(userId, habitId, data) {
   const habit = await Habit.findOne({ _id: habitId, user: userId });
-  if (!habit) {
-    throw new AppError("HABIT_NOT_FOUND", "Habit not found", 404);
-  }
+  if (!habit) throw new AppError("HABIT_NOT_FOUND", "Habit not found", 404);
+  if (habit.status !== "active") throw new AppError("HABIT_NOT_ACTIVE", "Only active habits can be logged", 400);
 
-  if (habit.status !== "active") {
-    throw new AppError("HABIT_NOT_ACTIVE", "Only active habits can be logged", 400);
-  }
+  // Parse date string safely as local — "2025-05-03" must not go through new Date("2025-05-03")
+  const [y, m, d] = (data.date ?? toDateString(new Date())).split("-").map(Number);
+  const logDateLocal = new Date(Date.UTC(y, m - 1, d)); // UTC midnight to match stored logs
+  const logDate = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
-  const logDate = toDateString(data.date);
-
-  // ── check if already logged today ──────────────────────────────────────
   const existingLog = await HabitLog.findOne({
     user: userId,
     habit: habitId,
-    date: new Date(logDate),
+    date: logDateLocal, // query with the same local midnight Date object
   });
 
   let log;
 
   if (existingLog) {
-    // additive — accumulate value, take the better status
     const betterStatus = (a, b) => {
       const rank = { success: 3, partial: 2, failed: 1 };
       return rank[a] >= rank[b] ? a : b;
     };
-
     existingLog.value  = (existingLog.value ?? 0) + (data.value ?? 0);
     existingLog.status = data.status;
-    if (data.note) existingLog.note = data.note; // overwrite note if provided
+    if (data.note) existingLog.note = data.note;
     log = await existingLog.save();
   } else {
     log = await HabitLog.create({
       user: userId,
       habit: habitId,
-      date: new Date(logDate),
+      date: logDateLocal, // save with local midnight
       status: data.status,
       value: data.value ?? 0,
       note: data.note,

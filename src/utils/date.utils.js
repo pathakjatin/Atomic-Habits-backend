@@ -1,5 +1,9 @@
 export function toDateString(date = new Date()) {
-  return new Date(date).toISOString().slice(0, 10);
+  const d = new Date(date);
+  const yyyy = d.getFullYear();
+  const mm   = String(d.getMonth() + 1).padStart(2, "0");
+  const dd   = String(d.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
 }
 
 export function isSameDay(a, b) {
@@ -8,6 +12,6 @@ export function isSameDay(a, b) {
 
 export function getYesterday(date = new Date()) {
   const d = new Date(date);
-  d.setUTCDate(d.getUTCDate() - 1);
+  d.setDate(d.getDate() - 1);
   return toDateString(d);
 }
