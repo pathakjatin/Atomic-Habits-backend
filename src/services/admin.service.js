@@ -83,3 +83,61 @@ export async function getDistributions() {
 
   return { habitTypes, targetDirections, badgeDistribution };
 }
+
+export async function getRetentionMetrics() {
+  const now = new Date();
+  const day7window  = new Date(now - 7  * 86400000);
+  const day30window = new Date(now - 30 * 86400000);
+
+  // Users who signed up at least 7 days ago
+  const eligibleDay7 = await User.find(
+    { createdAt: { $lte: day7window } },
+    { _id: 1 }
+  ).lean();
+
+  // Users who signed up at least 30 days ago
+  const eligibleDay30 = await User.find(
+    { createdAt: { $lte: day30window } },
+    { _id: 1 }
+  ).lean();
+
+  const eligibleDay7Ids  = eligibleDay7.map(u => u._id);
+  const eligibleDay30Ids = eligibleDay30.map(u => u._id);
+
+  // Of those, who logged at least once in the 7th day window (day 6–8 around signup)
+  const retained7 = await HabitLog.distinct("user", {
+    user: { $in: eligibleDay7Ids },
+    date: { $gte: day7window },
+  });
+
+  const retained30 = await HabitLog.distinct("user", {
+    user: { $in: eligibleDay30Ids },
+    date: { $gte: day30window },
+  });
+
+  // Habits per user
+  const habitsPerUser = eligibleDay7Ids.length > 0
+    ? await (async () => {
+        const [{ avg } = { avg: 0 }] = await Habit.aggregate([
+          { $group: { _id: "$user", count: { $sum: 1 } } },
+          { $group: { _id: null, avg: { $avg: "$count" } } },
+        ]);
+        return Math.round(avg * 10) / 10;
+      })()
+    : 0;
+
+  // Average streak across all active habits
+  const [{ avgStreak } = { avgStreak: 0 }] = await Habit.aggregate([
+    { $match: { currentStreak: { $gt: 0 } } },
+    { $group: { _id: null, avgStreak: { $avg: "$currentStreak" } } },
+  ]);
+
+  return {
+    day7RetentionPct:  eligibleDay7Ids.length  > 0 ? Math.round((retained7.length  / eligibleDay7Ids.length)  * 100) : 0,
+    day30RetentionPct: eligibleDay30Ids.length > 0 ? Math.round((retained30.length / eligibleDay30Ids.length) * 100) : 0,
+    eligibleDay7:  eligibleDay7Ids.length,
+    eligibleDay30: eligibleDay30Ids.length,
+    habitsPerUser,
+    avgStreak: Math.round(avgStreak * 10) / 10,
+  };
+}

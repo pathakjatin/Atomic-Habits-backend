@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { login, getMetrics, getUserGrowth, getActivityOverTime, getDistributions } from "../controllers/admin.controller.js";
+import { login, getMetrics, getUserGrowth, getActivityOverTime, getDistributions, getRetentionMetrics } from "../controllers/admin.controller.js";
 import { adminAuth } from "../middleware/adminAuth.middleware.js";
 
 const router = Router();
@@ -11,5 +11,6 @@ router.get("/metrics",      getMetrics);
 router.get("/growth",       getUserGrowth);       // ?days=30
 router.get("/activity",     getActivityOverTime); // ?days=30
 router.get("/distributions", getDistributions);
+router.get("/retention", getRetentionMetrics);
 
 export default router;

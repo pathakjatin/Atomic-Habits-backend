@@ -39,3 +39,8 @@ export const getDistributions = asyncHandler(async (req, res) => {
   const data = await adminService.getDistributions();
   res.json({ success: true, data });
 });
+
+export const getRetentionMetrics = asyncHandler(async (req, res) => {
+  const data = await adminService.getRetentionMetrics();
+  res.json({ success: true, data });
+});
