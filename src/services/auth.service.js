@@ -91,3 +91,50 @@ export async function deleteAccount(userId, password) {
     User.findByIdAndDelete(userId),
   ]);
 }
+
+export async function exportUserData(userId) {
+  const user = await User.findById(userId).select("-password -__v").lean();
+  if (!user) throw new AppError("USER_NOT_FOUND", "User not found", 404);
+
+  const habits = await Habit.find({ user: userId }).select("-__v -user").lean();
+  const habitIds = habits.map((h) => h._id);
+
+  const logs = await HabitLog.find({ habit: { $in: habitIds }, user: userId })
+    .select("-__v -user")
+    .lean();
+
+  return {
+    exportedAt: new Date().toISOString(),
+    profile: {
+      name:      user.name,
+      email:     user.email,
+      username:  user.username,
+      phone:     user.phone,
+      dob:       user.dob,
+      gender:    user.gender,
+      createdAt: user.createdAt,
+    },
+    habits: habits.map((h) => ({
+      _id:             h._id,
+      name:            h.name,
+      category:        h.category,
+      type:            h.trackingType,
+      frequency:       h.frequency,
+      target:          h.target,
+      targetDirection: h.targetDirection,
+      status:          h.status,
+      streak:          h.streak,
+      startDate:       h.startDate,
+      createdAt:       h.createdAt,
+    })),
+    logs: logs.map((l) => ({
+      _id:       l._id,
+      habit:     l.habit,
+      date:      l.date,
+      status:    l.status,
+      value:     l.value,
+      note:      l.note,
+      createdAt: l.createdAt,
+    })),
+  };
+}

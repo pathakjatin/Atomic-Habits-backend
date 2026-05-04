@@ -1,4 +1,4 @@
-import { registerUser, loginUser, updateProfile, deleteAccount, changePassword } from "../services/auth.service.js";
+import { registerUser, loginUser, updateProfile, deleteAccount, changePassword , exportUserData} from "../services/auth.service.js";
 import { registerValidator, loginValidator, updateProfileValidator, changePasswordValidator, deleteAccountValidator } from "../validators/auth.validator.js";
 import generateToken from "../utils/generateToken.utils.js";
 
@@ -89,6 +89,15 @@ export async function deleteAccountHandler(req, res, next) {
 
     await deleteAccount(req.user._id, req.body.password);
     return res.status(200).json({ message: "Account deleted successfully" });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function exportDataHandler(req, res, next) {
+  try {
+    const data = await exportUserData(req.user._id);
+    res.status(200).json({ message: "Export successful", data });
   } catch (error) {
     next(error);
   }
