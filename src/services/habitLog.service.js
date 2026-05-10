@@ -2,7 +2,7 @@ import HabitLog from "../models/habitLog.model.js";
 import Habit from "../models/habit.model.js";
 import AppError from "../utils/AppError.js";
 import { toDateString } from "../utils/date.utils.js";
-import { calculateStreak } from "../utils/streak.utils.js";
+import { calculateStreak, recomputeStreak } from "../utils/streak.utils.js";
 import { evaluateBadges } from "./badge.service.js";
 
 async function updateStreak(habit, logDate, status) {
@@ -87,9 +87,10 @@ export async function updateLog(userId, logId, data) {
   log.note = data.note ?? log.note;
   await log.save();
 
-  if (data.status && data.status !== previousStatus) {
-    await updateStreak(log.habit, log.date, data.status);
-  }
+  // in updateLog, replace the streak block at the bottom
+if (data.status && data.status !== previousStatus) {
+  await recomputeStreak(log.habit);
+}
 
   return log;
 }

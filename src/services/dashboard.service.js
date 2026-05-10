@@ -7,6 +7,11 @@ import { calculateSuccessRatio } from "../utils/ratio.utils.js";
 
 function isDueToday(habit, date) {
   const d = new Date(date);
+
+  // Respect startDate and endDate for all frequencies
+  if (habit.startDate && d < new Date(habit.startDate)) return false;
+  if (habit.endDate && d > new Date(habit.endDate)) return false;
+
   if (habit.frequency === "daily") return true;
   if (habit.frequency === "weekly") return d.getUTCDay() === habit.dueDay;
   if (habit.frequency === "monthly") return d.getUTCDate() === habit.dueDay;
