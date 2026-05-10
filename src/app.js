@@ -9,6 +9,7 @@ import habitLogRouter from "./routes/habitLog.route.js";
 import dashboardRouter from "./routes/dashboard.route.js";
 import badgeRouter from "./routes/badge.route.js";
 import adminRoutes from "./routes/admin.route.js";
+import reportRouter from "./routes/report.route.js";
 import { errorHandler } from "./middleware/error.middleware.js";
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/habits', habitRoutes);
 app.use("/api/habits/:habitId/logs", habitLogRouter);
 app.use("/api/dashboard", dashboardRouter);
 app.use("/api/badges", badgeRouter);
+app.use("/api/reports", reportRouter);
 app.use(errorHandler);
 
 export default app;
